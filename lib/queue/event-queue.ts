@@ -15,14 +15,38 @@ const QUEUE_NAME = 'tracking-events';
 let eventQueue: Queue<TrackingEventJob> | null = null;
 
 /**
+ * Redis connection configuration for BullMQ
+ * BullMQ requires maxRetriesPerRequest: null for blocking operations
+ */
+function getRedisConnection() {
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    throw new Error('REDIS_URL environment variable is not set');
+  }
+
+  // Parse Redis URL
+  const url = new URL(redisUrl);
+
+  return {
+    host: url.hostname,
+    port: parseInt(url.port) || 6379,
+    password: url.password || undefined,
+    username: url.username || undefined,
+    maxRetriesPerRequest: null, // Required by BullMQ for blocking operations
+    enableReadyCheck: false,
+    tls: redisUrl.startsWith('rediss://') ? {
+      rejectUnauthorized: false,
+    } : undefined,
+  };
+}
+
+/**
  * Get or create event queue
  */
 export function getEventQueue(): Queue<TrackingEventJob> {
   if (!eventQueue) {
-    const redis = getRedis();
-
     eventQueue = new Queue<TrackingEventJob>(QUEUE_NAME, {
-      connection: redis,
+      connection: getRedisConnection(),
       defaultJobOptions: {
         attempts: 3, // Retry up to 3 times
         backoff: {
@@ -74,8 +98,6 @@ export function startEventWorker(): Worker<TrackingEventJob> {
     console.log('Worker already running');
     return worker;
   }
-
-  const redis = getRedis();
 
   worker = new Worker<TrackingEventJob>(
     QUEUE_NAME,
@@ -137,7 +159,7 @@ export function startEventWorker(): Worker<TrackingEventJob> {
       }
     },
     {
-      connection: redis,
+      connection: getRedisConnection(),
       concurrency: 10, // Process up to 10 jobs simultaneously
       limiter: {
         max: 100, // Max 100 jobs
