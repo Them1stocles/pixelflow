@@ -23,8 +23,8 @@ export default function HowItWorksPage() {
               Your Marketing Is Invisible Without Pixels
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Every viral video, every ad, every post... if you can't track it, you can't scale it.
-              Here's why pixels are your secret weapon.
+              Every viral video, every ad, every post... if you cannot track it, you cannot scale
+              it. Here&apos;s why pixels are your secret weapon.
             </p>
             <Link href="/dashboard">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
@@ -45,8 +45,8 @@ export default function HowItWorksPage() {
             The Hard Truth About Marketing in 2025
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            You're dropping fire content across TikTok, Instagram, Twitter... but you have{' '}
-            <span className="font-bold text-red-600">no idea what's actually working</span>.
+            You&apos;re dropping fire content across TikTok, Instagram, Twitter... but you have{' '}
+            <span className="font-bold text-red-600">no idea what&apos;s actually working</span>.
           </p>
         </div>
 
@@ -55,10 +55,10 @@ export default function HowItWorksPage() {
             <div className="text-red-600 mb-4">
               <Target className="w-12 h-12" />
             </div>
-            <h3 className="text-xl font-bold mb-2 text-gray-900">You're Flying Blind</h3>
+            <h3 className="text-xl font-bold mb-2 text-gray-900">You&apos;re Flying Blind</h3>
             <p className="text-gray-700">
-              That video got 100K views? Cool. But how many actually signed up? You don't know
-              because you can't see the conversion path.
+              That video got 100K views? Cool. But how many actually signed up? You don&apos;t know
+              because you can&apos;t see the conversion path.
             </p>
           </Card>
 
@@ -68,8 +68,8 @@ export default function HowItWorksPage() {
             </div>
             <h3 className="text-xl font-bold mb-2 text-gray-900">Ad Platforms Hate You</h3>
             <p className="text-gray-700">
-              Facebook and TikTok can only see 30-40% of your sales without proper tracking. You're
-              basically teaching their algorithm with bad data.
+              Facebook and TikTok can only see 30-40% of your sales without proper tracking.
+              You&apos;re basically teaching their algorithm with bad data.
             </p>
           </Card>
 
@@ -79,8 +79,8 @@ export default function HowItWorksPage() {
             </div>
             <h3 className="text-xl font-bold mb-2 text-gray-900">Money Down the Drain</h3>
             <p className="text-gray-700">
-              Showing ads to people who already bought? Wasting budget on content that doesn't
-              convert? That's what happens without pixels.
+              Showing ads to people who already bought? Wasting budget on content that
+              doesn&apos;t convert? That&apos;s what happens without pixels.
             </p>
           </Card>
         </div>
@@ -91,11 +91,11 @@ export default function HowItWorksPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              What Pixels Actually Do (It's Wild)
+              What Pixels Actually Do (It&apos;s Wild)
             </h2>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Think of pixels as your personal spy network that tells you EXACTLY who's doing what
-              on your site
+              Think of pixels as your personal spy network that tells you EXACTLY who&apos;s doing
+              what on your site
             </p>
           </div>
 
@@ -138,8 +138,8 @@ export default function HowItWorksPage() {
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Build Lookalike Audiences</h3>
                   <p className="text-blue-100">
-                    Feed pixel data to Facebook/TikTok and they'll find thousands of people just
-                    like your best customers. This is how you scale from $1K/mo to $100K/mo.
+                    Feed pixel data to Facebook/TikTok and they&apos;ll find thousands of people
+                    just like your best customers. This is how you scale from $1K/mo to $100K/mo.
                   </p>
                 </div>
               </div>
@@ -153,8 +153,8 @@ export default function HowItWorksPage() {
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Retarget Like a Pro</h3>
                   <p className="text-blue-100">
-                    Show ads ONLY to people who viewed your sales page but didn't buy. Or exclude
-                    existing customers from new ad campaigns. Stop wasting money.
+                    Show ads ONLY to people who viewed your sales page but didn&apos;t buy. Or
+                    exclude existing customers from new ad campaigns. Stop wasting money.
                   </p>
                 </div>
               </div>
@@ -170,7 +170,7 @@ export default function HowItWorksPage() {
             Audience Segmentation = Money Printer
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Once you have pixel data, you unlock god-mode targeting. Here's what the pros do:
+            Once you have pixel data, you unlock god-mode targeting. Here&apos;s what the pros do:
           </p>
         </div>
 
@@ -181,14 +181,14 @@ export default function HowItWorksPage() {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">The Hot Lead Campaign</h3>
                 <p className="text-gray-700 mb-4">
-                  Create an audience of people who visited your sales page but didn't buy. Hit them
-                  with urgency ads ("Last chance!", "50% off ends tonight"). These convert at 10-20x
-                  regular ads.
+                  Create an audience of people who visited your sales page but didn&apos;t buy. Hit
+                  them with urgency ads (&ldquo;Last chance!&rdquo;, &ldquo;50% off ends
+                  tonight&rdquo;). These convert at 10-20x regular ads.
                 </p>
                 <div className="bg-white p-4 rounded-lg border border-green-200">
                   <p className="text-sm text-gray-600">
                     <span className="font-bold text-green-600">Pro Move:</span> Exclude anyone who
-                    purchased in the last 30 days. Don't waste money on existing customers.
+                    purchased in the last 30 days. Don&apos;t waste money on existing customers.
                   </p>
                 </div>
               </div>
@@ -201,14 +201,15 @@ export default function HowItWorksPage() {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">Lookalike Scaling</h3>
                 <p className="text-gray-700 mb-4">
-                  Take your best 100 customers and tell Facebook/TikTok "find me more people like
-                  this." The algorithm will target thousands of high-intent users you'd never find
-                  manually.
+                  Take your best 100 customers and tell Facebook/TikTok &ldquo;find me more people
+                  like this.&rdquo; The algorithm will target thousands of high-intent users
+                  you&apos;d never find manually.
                 </p>
                 <div className="bg-white p-4 rounded-lg border border-blue-200">
                   <p className="text-sm text-gray-600">
-                    <span className="font-bold text-blue-600">Real Talk:</span> This is how 7-figure
-                    creators scale. They're not smarter — they just use pixels correctly.
+                    <span className="font-bold text-blue-600">Real Talk:</span> This is how
+                    7-figure creators scale. They&apos;re not smarter — they just use pixels
+                    correctly.
                   </p>
                 </div>
               </div>
@@ -228,9 +229,9 @@ export default function HowItWorksPage() {
                 </p>
                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                   <p className="text-sm text-gray-600">
-                    <span className="font-bold text-purple-600">Quick Win:</span> Create a "30-day
-                    post-purchase" audience. These people just experienced your value and are primed
-                    for more.
+                    <span className="font-bold text-purple-600">Quick Win:</span> Create a
+                    &ldquo;30-day post-purchase&rdquo; audience. These people just experienced your
+                    value and are primed for more.
                   </p>
                 </div>
               </div>
@@ -245,15 +246,15 @@ export default function HowItWorksPage() {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">The Content Attribution</h3>
                 <p className="text-gray-700 mb-4">
-                  See exactly which TikTok videos, Twitter threads, or Instagram posts led to sales.
-                  Double down on what works, kill what doesn't. Most creators are guessing — you'll
-                  know.
+                  See exactly which TikTok videos, Twitter threads, or Instagram posts led to
+                  sales. Double down on what works, kill what doesn&apos;t. Most creators are
+                  guessing — you&apos;ll know.
                 </p>
                 <div className="bg-white p-4 rounded-lg border border-orange-200">
                   <p className="text-sm text-gray-600">
-                    <span className="font-bold text-orange-600">Hidden Gem:</span> Often your "viral"
-                    content doesn't convert. But that random thread you posted? 12 sales. Data reveals
-                    truth.
+                    <span className="font-bold text-orange-600">Hidden Gem:</span> Often your
+                    &ldquo;viral&rdquo; content doesn&apos;t convert. But that random thread you
+                    posted? 12 sales. Data reveals truth.
                   </p>
                 </div>
               </div>
@@ -279,7 +280,7 @@ export default function HowItWorksPage() {
               </div>
               <h3 className="text-xl font-bold mb-2">Setup in 5 Minutes</h3>
               <p className="text-gray-400">
-                Add your pixel IDs, copy one script tag. You're tracking. No developer needed.
+                Add your pixel IDs, copy one script tag. You&apos;re tracking. No developer needed.
               </p>
             </div>
 
@@ -289,8 +290,8 @@ export default function HowItWorksPage() {
               </div>
               <h3 className="text-xl font-bold mb-2">Multi-Platform</h3>
               <p className="text-gray-400">
-                Facebook, TikTok, Google Analytics — all your pixels in one place. See everything at
-                once.
+                Facebook, TikTok, Google Analytics — all your pixels in one place. See everything
+                at once.
               </p>
             </div>
 
@@ -300,8 +301,8 @@ export default function HowItWorksPage() {
               </div>
               <h3 className="text-xl font-bold mb-2">99%+ Capture Rate</h3>
               <p className="text-gray-400">
-                Server-side tracking catches conversions even with ad blockers. Your competition only
-                sees 40%.
+                Server-side tracking catches conversions even with ad blockers. Your competition
+                only sees 40%.
               </p>
             </div>
           </div>
@@ -326,12 +327,12 @@ export default function HowItWorksPage() {
           Every Day Without Pixels is Money Left on the Table
         </h2>
         <p className="text-xl text-gray-600 mb-8">
-          While you're reading this, your competitors are building custom audiences, running
+          While you&apos;re reading this, your competitors are building custom audiences, running
           retargeting campaigns, and scaling with lookalikes. Join them.
         </p>
         <Link href="/dashboard">
           <Button size="lg" className="text-lg px-12 py-6">
-            Get Started Now — It's Free
+            Get Started Now — It&apos;s Free
             <ArrowRight className="ml-2 w-6 h-6" />
           </Button>
         </Link>
