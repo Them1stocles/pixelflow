@@ -1,0 +1,67 @@
+{
+  "$schema": "https://raw.githubusercontent.com/whopio/whop-app-config/main/schema.json",
+  "name": "PixelFlow",
+  "description": "Multi-platform conversion tracking for Whop merchants",
+  "version": "1.0.0",
+  "logo": "https://your-domain.com/logo.png",
+  "experiences": {
+    "main": {
+      "name": "PixelFlow Dashboard",
+      "path": "/dashboard"
+    }
+  },
+  "routes": {
+    "dashboard": "/dashboard",
+    "installation": "/dashboard/installation",
+    "pixels": "/dashboard/pixels",
+    "events": "/dashboard/events"
+  },
+  "webhooks": {
+    "whop": {
+      "path": "/api/webhooks/whop",
+      "events": [
+        "payment.succeeded",
+        "payment.failed",
+        "membership.created",
+        "membership.renewed",
+        "membership.cancelled",
+        "checkout.completed"
+      ]
+    }
+  },
+  "permissions": {
+    "scopes": [
+      "user:read",
+      "company:read",
+      "payment:read"
+    ]
+  },
+  "pricing": {
+    "tiers": [
+      {
+        "id": "free",
+        "name": "Free",
+        "price": 0,
+        "events": 10000
+      },
+      {
+        "id": "basic",
+        "name": "Basic",
+        "price": 29,
+        "events": 50000
+      },
+      {
+        "id": "pro",
+        "name": "Pro",
+        "price": 79,
+        "events": 200000
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "price": 199,
+        "events": 1000000
+      }
+    ]
+  }
+}

@@ -1,0 +1,199 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User/Merchant Model
+model Merchant {
+  id                String         @id @default(cuid())
+  whopUserId        String         @unique
+  whopCompanyId     String?
+  email             String         @unique
+  name              String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Subscription info
+  subscriptionTier  String         @default("free") // free, basic, pro, enterprise
+  monthlyEventLimit Int            @default(10000)
+  monthlyEventCount Int            @default(0)
+  lastResetAt       DateTime       @default(now())
+
+  // Relations
+  pixelConfigs      PixelConfig[]
+  trackingEvents    TrackingEvent[]
+  eventLogs         EventLog[]
+  dailyStats        DailyStats[]
+
+  @@index([whopUserId])
+  @@index([email])
+  @@map("merchants")
+}
+
+// Pixel Configuration Model
+model PixelConfig {
+  id                  String    @id @default(cuid())
+  merchantId          String
+  platform            String    // facebook, tiktok, google_analytics, snapchat, pinterest
+
+  // Platform-specific IDs
+  pixelId             String
+  accessToken         String?   // Encrypted in production
+  testEventCode       String?   // For testing events
+
+  // Additional configuration
+  isActive            Boolean   @default(true)
+  conversionApiEnabled Boolean  @default(false)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  merchant            Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId, platform, pixelId])
+  @@index([merchantId])
+  @@index([platform])
+  @@map("pixel_configs")
+}
+
+// Tracking Event Model
+model TrackingEvent {
+  id                String    @id @default(cuid())
+  merchantId        String
+
+  // Event data
+  eventName         String    // PageView, ViewContent, AddToCart, Purchase, etc.
+  eventId           String    @unique // Deterministic ID for deduplication
+
+  // Event source
+  eventSource       String    // browser, server, webhook
+  eventSourceUrl    String?   // URL where event originated
+
+  // User data (hashed for privacy)
+  userId            String?
+  email             String?
+  phone             String?
+
+  // Browser data
+  userAgent         String?
+  ipAddress         String?
+  fbp               String?   // Facebook browser ID
+  fbc               String?   // Facebook click ID
+
+  // Event-specific data
+  value             Float?
+  currency          String?   @default("USD")
+  contentIds        String[]  // Array of product IDs
+  contentName       String?
+  contentCategory   String?
+  numItems          Int?
+
+  // Custom data (JSON)
+  customData        Json?
+
+  // Processing status
+  status            String    @default("pending") // pending, processing, completed, failed
+  processedAt       DateTime?
+  retryCount        Int       @default(0)
+
+  // Delivery status per platform
+  facebookStatus    String?   // success, failed, pending
+  facebookSentAt    DateTime?
+  tiktokStatus      String?
+  tiktokSentAt      DateTime?
+  googleStatus      String?
+  googleSentAt      DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  merchant          Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  eventLogs         EventLog[]
+
+  @@index([merchantId])
+  @@index([eventName])
+  @@index([status])
+  @@index([createdAt])
+  @@index([eventId])
+  @@map("tracking_events")
+}
+
+// Event Log Model (for debugging and audit trail)
+model EventLog {
+  id              String        @id @default(cuid())
+  merchantId      String
+  trackingEventId String?
+
+  // Log details
+  level           String        // info, warning, error
+  message         String
+  platform        String?       // facebook, tiktok, google, etc.
+
+  // Error details
+  errorCode       String?
+  errorMessage    String?
+  stackTrace      String?       @db.Text
+
+  // Request/Response data
+  requestPayload  Json?
+  responsePayload Json?
+
+  createdAt       DateTime      @default(now())
+
+  // Relations
+  merchant        Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  trackingEvent   TrackingEvent? @relation(fields: [trackingEventId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@index([level])
+  @@index([createdAt])
+  @@index([trackingEventId])
+  @@map("event_logs")
+}
+
+// Daily Stats Model (aggregated for performance)
+model DailyStats {
+  id              String    @id @default(cuid())
+  merchantId      String
+  date            DateTime  @db.Date
+
+  // Event counts by type
+  totalEvents     Int       @default(0)
+  pageViews       Int       @default(0)
+  viewContent     Int       @default(0)
+  addToCart       Int       @default(0)
+  initiateCheckout Int      @default(0)
+  purchases       Int       @default(0)
+
+  // Revenue data
+  totalRevenue    Float     @default(0)
+  currency        String    @default("USD")
+
+  // Delivery success rates
+  facebookSuccess Int       @default(0)
+  facebookFailed  Int       @default(0)
+  tiktokSuccess   Int       @default(0)
+  tiktokFailed    Int       @default(0)
+  googleSuccess   Int       @default(0)
+  googleFailed    Int       @default(0)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  merchant        Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId, date])
+  @@index([merchantId])
+  @@index([date])
+  @@map("daily_stats")
+}
