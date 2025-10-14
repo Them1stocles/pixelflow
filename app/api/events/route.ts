@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { eventListQuerySchema } from '@/lib/validations';
 import { getMerchantFromRequest } from '@/lib/whop-auth';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/events
  * Get tracking events for a merchant with pagination and filtering

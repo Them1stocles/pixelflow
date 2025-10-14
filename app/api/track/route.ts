@@ -7,6 +7,9 @@ import { normalizeEventName } from '@/lib/event-mapping';
 import { trackingEventSchema } from '@/lib/validations';
 import { queueEvent } from '@/lib/queue/event-queue';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/track
  * Main endpoint for tracking events from browser and server

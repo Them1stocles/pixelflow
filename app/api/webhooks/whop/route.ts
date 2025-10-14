@@ -6,6 +6,9 @@ import { verifyWebhookSignature } from '@/lib/crypto';
 import { whopWebhookSchema } from '@/lib/validations';
 import { queueEvent } from '@/lib/queue/event-queue';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/webhooks/whop
  * Handle webhooks from Whop for purchases and subscriptions

@@ -5,6 +5,9 @@ import { pixelConfigSchema } from '@/lib/validations';
 import { encrypt } from '@/lib/crypto';
 import { getMerchantFromRequest } from '@/lib/whop-auth';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/pixels
  * Get all pixel configurations for a merchant

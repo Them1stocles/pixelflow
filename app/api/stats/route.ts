@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { sub, format } from 'date-fns';
 import { getMerchantFromRequest } from '@/lib/whop-auth';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/stats
  * Get dashboard statistics for a merchant
