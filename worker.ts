@@ -15,6 +15,13 @@ import { pingRedis } from './lib/redis';
 async function main() {
   console.log('Starting PixelFlow Event Worker...');
 
+  // Debug: Check environment variables
+  console.log('Environment check:');
+  console.log('- NODE_ENV:', process.env.NODE_ENV);
+  console.log('- REDIS_URL exists:', !!process.env.REDIS_URL);
+  console.log('- DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('- WHOP_API_KEY exists:', !!process.env.WHOP_API_KEY);
+
   // Check Redis connection
   const redisOk = await pingRedis();
 
