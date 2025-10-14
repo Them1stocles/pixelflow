@@ -25,6 +25,10 @@ export function getRedis(): Redis {
         }
         return false;
       },
+      // TLS configuration for rediss:// URLs (e.g., Upstash)
+      tls: redisUrl.startsWith('rediss://') ? {
+        rejectUnauthorized: false,
+      } : undefined,
     });
 
     redis.on('error', (error) => {
