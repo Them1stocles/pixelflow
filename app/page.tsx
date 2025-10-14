@@ -24,9 +24,9 @@ export default function Home() {
               </Button>
             </Link>
 
-            <Link href="/demo">
+            <Link href="/how-it-works">
               <Button size="lg" variant="outline" className="text-lg px-8">
-                View Demo
+                How PixelFlow Works
               </Button>
             </Link>
           </div>
