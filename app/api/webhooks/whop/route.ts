@@ -94,36 +94,64 @@ export async function POST(req: NextRequest) {
     };
 
     switch (event) {
-      case 'payment.succeeded':
+      // Main conversion events for merchant's customers
+      case 'payment_succeeded':
         eventName = 'Purchase';
         eventData.value = data.amount;
         eventData.currency = data.currency || 'USD';
         eventData.orderStatus = 'completed';
         break;
 
-      case 'membership.created':
+      case 'membership_went_valid':
         eventName = 'Subscribe';
         eventData.value = data.amount;
         eventData.currency = data.currency || 'USD';
         break;
 
-      case 'membership.renewed':
+      case 'membership_experience_claimed':
         eventName = 'Subscribe';
         eventData.value = data.amount;
         eventData.currency = data.currency || 'USD';
-        eventData.orderStatus = 'renewal';
+        eventData.orderStatus = 'claimed';
         break;
 
-      case 'checkout.completed':
+      case 'payment_pending':
         eventName = 'InitiateCheckout';
         eventData.value = data.amount;
         eventData.currency = data.currency || 'USD';
         break;
 
-      case 'payment.failed':
-      case 'membership.cancelled':
-        // Log but don't track as conversion
-        console.log(`Skipping event: ${event}`);
+      // Events for PixelFlow app subscriptions (merchants paying for PixelFlow)
+      case 'app_payment_succeeded':
+        // Update merchant's subscription tier when they pay for PixelFlow
+        console.log(`Merchant ${merchant.id} subscription payment succeeded`);
+        // TODO: Update subscription tier based on product purchased
+        return NextResponse.json({
+          success: true,
+          message: 'App subscription payment processed',
+        });
+
+      case 'app_membership_went_valid':
+        console.log(`Merchant ${merchant.id} PixelFlow subscription went valid`);
+        // TODO: Activate merchant's subscription
+        return NextResponse.json({
+          success: true,
+          message: 'App subscription activated',
+        });
+
+      case 'app_membership_went_invalid':
+        console.log(`Merchant ${merchant.id} PixelFlow subscription went invalid`);
+        // TODO: Downgrade merchant to free tier
+        return NextResponse.json({
+          success: true,
+          message: 'App subscription deactivated',
+        });
+
+      // Events to log but not track as conversions
+      case 'payment_failed':
+      case 'membership_went_invalid':
+      case 'membership_cancel_at_period_end_changed':
+        console.log(`Logging event: ${event}`);
         return NextResponse.json({
           success: true,
           message: 'Event logged',
