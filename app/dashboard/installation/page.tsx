@@ -34,6 +34,25 @@ export default function InstallationPage() {
         </p>
       </div>
 
+      {/* Already Tracking Notice */}
+      <Card className="p-6 bg-green-50 border-green-200">
+        <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+          <Check className="w-6 h-6 text-green-600" />
+          Already Tracking Whop Purchases!
+        </h2>
+        <p className="text-gray-700 mb-3">
+          PixelFlow is <strong>already tracking all purchases, subscriptions, and group joins</strong> that happen through Whop checkout. No setup required!
+        </p>
+        <p className="text-gray-700 font-semibold mb-2">
+          Install the script below ONLY if:
+        </p>
+        <ul className="list-disc list-inside text-gray-700 space-y-1">
+          <li>You have a custom landing page or website</li>
+          <li>You want to track PageView events before checkout</li>
+          <li>You want to track AddToCart or custom events</li>
+        </ul>
+      </Card>
+
       {/* Installation Instructions */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Installation Steps</h2>
