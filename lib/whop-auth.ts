@@ -91,7 +91,7 @@ export async function getWhopMerchant(session?: WhopSession | null) {
         email: `${whopSession.userId}@whop.user`, // Placeholder until we get real email
         name: null,
         subscriptionTier: 'free',
-        monthlyEventLimit: 10000,
+        monthlyEventLimit: 20, // Free tier: 20 events/month
         monthlyEventCount: 0,
       },
     });
@@ -193,7 +193,7 @@ export async function getMerchantFromRequest(request: Request) {
           whopCompanyId: null,
           email: `${tokenData.userId}@whop.user`,
           subscriptionTier: 'free',
-          monthlyEventLimit: 10000,
+          monthlyEventLimit: 20, // Free tier: 20 events/month
           monthlyEventCount: 0,
         },
       });

@@ -22,7 +22,7 @@ model Merchant {
 
   // Subscription info
   subscriptionTier  String         @default("free") // free, basic, pro, enterprise
-  monthlyEventLimit Int            @default(10000)
+  monthlyEventLimit Int            @default(20) // Free: 20, Basic: 300, Pro: 1500, Enterprise: unlimited (-1)
   monthlyEventCount Int            @default(0)
   lastResetAt       DateTime       @default(now())
 

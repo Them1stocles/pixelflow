@@ -98,8 +98,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check monthly event limit
-    if (merchant.monthlyEventCount >= merchant.monthlyEventLimit) {
+    // Check monthly event limit (skip check for unlimited tier)
+    // Unlimited tier is represented by -1
+    if (merchant.monthlyEventLimit !== -1 && merchant.monthlyEventCount >= merchant.monthlyEventLimit) {
       return NextResponse.json(
         {
           error: 'Monthly event limit reached',

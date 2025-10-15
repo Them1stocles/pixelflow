@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { requireWhopAuth } from '@/lib/whop-auth';
 import { Card } from '@/components/ui/card';
 import { TrendingUp, Activity, ShoppingCart, DollarSign } from 'lucide-react';
+import { UsageDisplay } from '@/components/usage-display';
 
 async function getDashboardStats(merchantId: string) {
   // In a real app, this would call the API
@@ -70,6 +71,14 @@ export default async function DashboardPage() {
           Welcome back, {merchant.name || merchant.email}
         </p>
       </div>
+
+      {/* Usage Display */}
+      <UsageDisplay
+        currentTier={merchant.subscriptionTier}
+        monthlyEventCount={merchant.monthlyEventCount}
+        monthlyEventLimit={merchant.monthlyEventLimit}
+        showUpgradePrompt={true}
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

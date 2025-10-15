@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { verifyWebhookSignature } from '@/lib/crypto';
 import { whopWebhookSchema } from '@/lib/validations';
 import { queueEvent } from '@/lib/queue/event-queue';
+import { getTierConfig, type SubscriptionTier } from '@/lib/subscription-tiers';
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
@@ -125,26 +126,69 @@ export async function POST(req: NextRequest) {
       case 'app_payment_succeeded':
         // Update merchant's subscription tier when they pay for PixelFlow
         console.log(`Merchant ${merchant.id} subscription payment succeeded`);
-        // TODO: Update subscription tier based on product purchased
+        // Note: Tier updates will be handled by app_membership_went_valid
         return NextResponse.json({
           success: true,
           message: 'App subscription payment processed',
         });
 
       case 'app_membership_went_valid':
+        // Activate merchant's subscription and set correct limits
         console.log(`Merchant ${merchant.id} PixelFlow subscription went valid`);
-        // TODO: Activate merchant's subscription
+
+        // Map Whop product IDs to subscription tiers
+        // These product IDs should match the ones configured in Whop dashboard
+        const productTierMap: Record<string, SubscriptionTier> = {
+          'WHOP_BASIC_PRODUCT_ID': 'basic',
+          'WHOP_PRO_PRODUCT_ID': 'pro',
+          'WHOP_ENTERPRISE_PRODUCT_ID': 'enterprise',
+        };
+
+        const productId = data.product_id;
+        const newTier = productTierMap[productId] || 'free';
+        const tierConfig = getTierConfig(newTier);
+
+        // Update merchant's subscription tier and limits
+        await prisma.merchant.update({
+          where: { id: merchant.id },
+          data: {
+            subscriptionTier: newTier,
+            monthlyEventLimit: tierConfig.eventLimit,
+            // Reset event count if upgrading
+            monthlyEventCount: 0,
+            lastResetAt: new Date(),
+          },
+        });
+
+        console.log(`Updated merchant ${merchant.id} to ${newTier} tier (${tierConfig.eventLimit} events/month)`);
+
         return NextResponse.json({
           success: true,
           message: 'App subscription activated',
+          tier: newTier,
         });
 
       case 'app_membership_went_invalid':
+        // Downgrade merchant to free tier
         console.log(`Merchant ${merchant.id} PixelFlow subscription went invalid`);
-        // TODO: Downgrade merchant to free tier
+
+        const freeTierConfig = getTierConfig('free');
+
+        await prisma.merchant.update({
+          where: { id: merchant.id },
+          data: {
+            subscriptionTier: 'free',
+            monthlyEventLimit: freeTierConfig.eventLimit,
+            // Don't reset event count - let them see their usage
+          },
+        });
+
+        console.log(`Downgraded merchant ${merchant.id} to free tier (${freeTierConfig.eventLimit} events/month)`);
+
         return NextResponse.json({
           success: true,
           message: 'App subscription deactivated',
+          tier: 'free',
         });
 
       // Events to log but not track as conversions
