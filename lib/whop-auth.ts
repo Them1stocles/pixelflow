@@ -30,6 +30,18 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
 
+    // Debug: Log all headers
+    const headersList = await headers();
+    const allHeaders: Record<string, string> = {};
+    headersList.forEach((value, key) => {
+      allHeaders[key] = value;
+    });
+    console.log('[PixelFlow Auth] Headers present:', Object.keys(allHeaders).join(', '));
+
+    // Check for whop token specifically
+    const whopToken = headersList.get('cookie')?.includes('whop_user_token');
+    console.log('[PixelFlow Auth] Has whop_user_token cookie:', whopToken);
+
     // Pass headers directly to validateToken - SDK handles cookie extraction
     // Remove dontThrow to see real authentication errors
     const tokenData = await validateToken({ headers });
