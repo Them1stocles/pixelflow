@@ -28,28 +28,15 @@ export interface WhopSession {
  */
 export async function getWhopSession(): Promise<WhopSession | null> {
   try {
-    const headersList = headers();
-
-    // Extract token from cookie header
-    const cookieHeader = headersList.get('cookie');
-    const whopToken = cookieHeader
-      ?.split(';')
-      .find(c => c.trim().startsWith('whop_user_token='))
-      ?.split('=')[1];
-
-    if (!whopToken) {
-      console.log('No whop_user_token found in cookies');
-      return null;
-    }
-
-    // Validate token with Whop SDK
+    // Pass headers directly to validateToken - SDK handles cookie extraction
+    // This is the correct usage per Whop SDK documentation
     const tokenData = await validateToken({
-      token: whopToken,
+      headers,
       dontThrow: true,
     });
 
     if (!tokenData || !tokenData.userId) {
-      console.log('Invalid Whop token');
+      console.log('No valid Whop session found');
       return null;
     }
 
@@ -130,21 +117,10 @@ export async function requireWhopAuth() {
  */
 export async function checkWhopAccess(productId: string): Promise<boolean> {
   try {
-    const headersList = headers();
-    const cookieHeader = headersList.get('cookie');
-    const whopToken = cookieHeader
-      ?.split(';')
-      .find(c => c.trim().startsWith('whop_user_token='))
-      ?.split('=')[1];
-
-    if (!whopToken) {
-      return false;
-    }
-
-    // Use hasAccess with the product ID as the expression
+    // Pass headers directly to hasAccess - SDK handles cookie extraction
     const hasProductAccess = await hasAccess({
       to: productId, // Simple expression - just check if user has access to this product
-      token: whopToken,
+      headers,
     });
 
     return hasProductAccess;
@@ -160,20 +136,15 @@ export async function checkWhopAccess(productId: string): Promise<boolean> {
  */
 export async function getMerchantFromRequest(request: Request) {
   try {
-    // Extract token from cookie header
-    const cookieHeader = request.headers.get('cookie');
-    const whopToken = cookieHeader
-      ?.split(';')
-      .find(c => c.trim().startsWith('whop_user_token='))
-      ?.split('=')[1];
+    // For API routes, we need to create a headers-like object from the request
+    // The validateToken SDK function expects a headers object, not a Request object
+    const requestHeaders = {
+      get: (key: string) => request.headers.get(key),
+    };
 
-    if (!whopToken) {
-      return null;
-    }
-
-    // Validate token
+    // Validate token using SDK - pass headers object
     const tokenData = await validateToken({
-      token: whopToken,
+      headers: requestHeaders as any,
       dontThrow: true,
     });
 
