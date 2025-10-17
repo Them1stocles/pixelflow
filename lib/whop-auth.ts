@@ -1,11 +1,12 @@
-import { validateToken, hasAccess } from '@whop-apps/sdk';
+import { whopSdk } from './whop-sdk';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import prisma from './prisma';
 
 /**
  * Whop Authentication Utilities
- * Uses Whop SDK for production-ready OAuth authentication
+ * Uses modern @whop/api SDK for production-ready OAuth authentication
+ * Following official whop-nextjs-app-template pattern
  */
 
 export interface WhopUser {
@@ -30,35 +31,23 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
 
-    // Debug: Log all headers
+    // Get headers list
     const headersList = await headers();
-    const allHeaders: Record<string, string> = {};
-    headersList.forEach((value, key) => {
-      allHeaders[key] = value;
-    });
-    console.log('[PixelFlow Auth] Headers present:', Object.keys(allHeaders).join(', '));
 
-    // Check for whop token specifically
-    const whopToken = headersList.get('cookie')?.includes('whop_user_token');
-    console.log('[PixelFlow Auth] Has whop_user_token cookie:', whopToken);
+    // ✅ Use the new @whop/api SDK pattern
+    // Pass headersList object directly (not wrapped in { headers })
+    const { userId } = await whopSdk.verifyUserToken(headersList);
 
-    // Log configured App ID
-    console.log('[PixelFlow Auth] Configured NEXT_PUBLIC_WHOP_APP_ID:', process.env.NEXT_PUBLIC_WHOP_APP_ID);
-
-    // Pass headers directly to validateToken - SDK handles cookie extraction
-    // Remove dontThrow to see real authentication errors
-    const tokenData = await validateToken({ headers });
-
-    if (!tokenData || !tokenData.userId) {
+    if (!userId) {
       console.warn('[PixelFlow Auth] ⚠️  Token validated but no userId found');
       return null;
     }
 
     console.log('[PixelFlow Auth] ✅ Token validated successfully');
-    console.log('[PixelFlow Auth] User ID:', tokenData.userId);
+    console.log('[PixelFlow Auth] User ID:', userId);
 
     return {
-      userId: tokenData.userId,
+      userId,
       companyId: null,
       experienceId: null,
     };
@@ -69,8 +58,7 @@ export async function getWhopSession(): Promise<WhopSession | null> {
 
     // Log actual error for debugging
     if (error instanceof Error) {
-      console.log('[PixelFlow Auth] Debug - Error type:', error.name);
-      console.log('[PixelFlow Auth] Debug - Error message:', error.message);
+      console.log('[PixelFlow Auth] Debug - Error:', error.message);
     }
 
     return null;
@@ -162,15 +150,22 @@ export async function requireWhopAuth() {
  * Check if user has access to a specific experience/product
  * Use this for premium features or content gating
  */
-export async function checkWhopAccess(productId: string): Promise<boolean> {
+export async function checkWhopAccess(experienceId: string): Promise<boolean> {
   try {
-    // Pass headers directly to hasAccess - SDK handles cookie extraction
-    const hasProductAccess = await hasAccess({
-      to: productId, // Simple expression - just check if user has access to this product
-      headers,
+    const headersList = await headers();
+    const { userId } = await whopSdk.verifyUserToken(headersList);
+
+    if (!userId) {
+      return false;
+    }
+
+    // ✅ Use the SDK's built-in access check
+    const result = await whopSdk.access.checkIfUserHasAccessToExperience({
+      userId,
+      experienceId,
     });
 
-    return hasProductAccess;
+    return result.hasAccess;
   } catch (error) {
     console.error('Error checking Whop access:', error);
     return false;
@@ -183,35 +178,35 @@ export async function checkWhopAccess(productId: string): Promise<boolean> {
  */
 export async function getMerchantFromRequest(request: Request) {
   try {
-    // For API routes, we need to create a headers-like object from the request
-    // The validateToken SDK function expects a headers object, not a Request object
+    // ✅ Create headers-like object from Request
     const requestHeaders = {
       get: (key: string) => request.headers.get(key),
+      forEach: (callback: (value: string, key: string) => void) => {
+        request.headers.forEach(callback);
+      },
     };
 
-    // Validate token using SDK - pass headers object
-    const tokenData = await validateToken({
-      headers: requestHeaders as any,
-    });
+    // ✅ Verify token with new SDK
+    const { userId } = await whopSdk.verifyUserToken(requestHeaders as any);
 
-    if (!tokenData || !tokenData.userId) {
+    if (!userId) {
       return null;
     }
 
     // Find or create merchant
     let merchant = await prisma.merchant.findUnique({
-      where: { whopUserId: tokenData.userId },
+      where: { whopUserId: userId },
     });
 
     if (!merchant) {
       // Use upsert to avoid duplicate key errors
       merchant = await prisma.merchant.upsert({
-        where: { whopUserId: tokenData.userId },
+        where: { whopUserId: userId },
         update: {},
         create: {
-          whopUserId: tokenData.userId,
+          whopUserId: userId,
           whopCompanyId: null,
-          email: `${tokenData.userId}@whop.user`,
+          email: `${userId}@whop.user`,
           subscriptionTier: 'free',
           monthlyEventLimit: 20, // Free tier: 20 events/month
           monthlyEventCount: 0,

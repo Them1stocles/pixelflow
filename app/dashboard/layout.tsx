@@ -26,7 +26,7 @@ export default function DashboardLayout({
           <Link href="/dashboard" className="text-2xl font-bold text-blue-600">
             PixelFlow
           </Link>
-          <p className="text-xs text-gray-500 mt-1">v1.0.8</p>
+          <p className="text-xs text-gray-500 mt-1">v1.0.9</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
