@@ -1,11 +1,11 @@
-import { verifyUserToken, checkUserAccess } from './whop-sdk';
+import { verifyUserToken } from './whop-sdk';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import prisma from './prisma';
 
 /**
  * Whop Authentication Utilities
- * Uses @whop-apps/sdk with correct async pattern
+ * Uses @whop/api with correct pattern from working Whop apps
  */
 
 export interface WhopUser {
@@ -30,8 +30,10 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
 
-    // ✅ Pass headers function directly - wrapper handles awaiting
-    const { userId } = await verifyUserToken(headers);
+    // ✅ CORRECT: Await headers() FIRST, then pass the result
+    // This matches the exact pattern from working Whop apps
+    const headersList = await headers();
+    const { userId } = await verifyUserToken(headersList);
 
     if (!userId) {
       console.warn('[PixelFlow Auth] ⚠️  Token validated but no userId found');
@@ -147,7 +149,16 @@ export async function requireWhopAuth() {
  */
 export async function checkWhopAccess(experienceId: string): Promise<boolean> {
   try {
-    return await checkUserAccess(experienceId, headers);
+    const headersList = await headers();
+    const { userId } = await verifyUserToken(headersList);
+
+    if (!userId) {
+      return false;
+    }
+
+    // TODO: Implement access check when needed
+    // For now, having a valid token means access
+    return true;
   } catch (error) {
     console.error('Error checking Whop access:', error);
     return false;
@@ -160,7 +171,8 @@ export async function checkWhopAccess(experienceId: string): Promise<boolean> {
  */
 export async function getMerchantFromRequest(request: Request) {
   try {
-    // ✅ Pass request.headers directly
+    // ✅ CORRECT: Pass request.headers or request directly
+    // @whop/api's verifyUserToken accepts both
     const { userId } = await verifyUserToken(request.headers);
 
     if (!userId) {

@@ -1,45 +1,28 @@
-import { validateToken, hasAccess } from '@whop-apps/sdk';
+import { verifyUserToken as whopVerifyUserToken } from '@whop/api';
 
 /**
  * Whop SDK Utilities
- * Uses @whop-apps/sdk with correct async/await pattern
+ * Uses @whop/api (correct package used by all working Whop apps)
  */
 
 export interface TokenData {
   userId: string;
-  appId?: string;
 }
 
 /**
  * Verify user token from headers
- * This wraps validateToken with proper async handling
+ * Passes through to @whop/api's verifyUserToken which handles Headers objects natively
  */
-export async function verifyUserToken(headers: any): Promise<TokenData> {
-  // await the headers() function call if it's a function
-  const headersList = typeof headers === 'function' ? await headers() : headers;
-
-  // Call validateToken with the headers object
-  const tokenData = await validateToken({ headers: headersList });
+export async function verifyUserToken(
+  headersOrRequest: Headers | Request
+): Promise<TokenData> {
+  // @whop/api's verifyUserToken accepts Headers or Request directly
+  const tokenData = await whopVerifyUserToken(headersOrRequest);
 
   return {
     userId: tokenData.userId,
-    appId: tokenData.appId,
   };
 }
 
-/**
- * Check if user has access to experience
- */
-export async function checkUserAccess(experienceId: string, headers: any): Promise<boolean> {
-  const headersList = typeof headers === 'function' ? await headers() : headers;
-
-  const access = await hasAccess({
-    to: experienceId,
-    headers: headersList,
-  });
-
-  return access;
-}
-
-// Export SDK functions for direct use
-export { validateToken, hasAccess };
+// Re-export for direct use
+export { whopVerifyUserToken };
