@@ -30,38 +30,23 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     const headersList = headers();
 
-    // DEBUG LOGGING - Check what headers are available
-    console.log('=== WHOP AUTH DEBUG ===');
-    console.log('All headers:', JSON.stringify(Object.fromEntries(headersList.entries())));
-    console.log('Cookie header:', headersList.get('cookie'));
-
-    // Check if whop_user_token exists in cookies
-    const cookieHeader = headersList.get('cookie');
-    const hasWhopToken = cookieHeader?.includes('whop_user_token');
-    console.log('Has whop_user_token cookie:', hasWhopToken);
-
     // Pass headers directly to validateToken - SDK handles cookie extraction
-    // This is the correct usage per Whop SDK documentation
     const tokenData = await validateToken({
       headers,
       dontThrow: true,
     });
 
-    console.log('validateToken result:', tokenData ? `userId: ${tokenData.userId}` : 'null');
-    console.log('=== END DEBUG ===');
-
     if (!tokenData || !tokenData.userId) {
-      console.log('No valid Whop session found');
       return null;
     }
 
     return {
       userId: tokenData.userId,
-      companyId: null, // Whop SDK doesn't expose this in token validation
-      experienceId: null, // Would need to come from URL params
+      companyId: null,
+      experienceId: null,
     };
   } catch (error) {
-    console.error('Error validating Whop session:', error);
+    console.error('[PixelFlow Auth] Error validating Whop session:', error);
     return null;
   }
 }
