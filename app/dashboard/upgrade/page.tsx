@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { requireWhopAuth } from '@/lib/whop-auth';
+import { getWhopSession, getWhopMerchant } from '@/lib/whop-auth';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,10 +10,30 @@ import {
   formatEventCount,
   type SubscriptionTier,
 } from '@/lib/subscription-tiers';
-import { Check, Zap, ArrowRight } from 'lucide-react';
+import { Check, Zap, ArrowRight, Activity } from 'lucide-react';
 
 export default async function UpgradePage() {
-  const merchant = await requireWhopAuth();
+  const session = await getWhopSession();
+  const merchant = session ? await getWhopMerchant(session) : null;
+
+  // If no merchant, show auth pending message (don't redirect externally!)
+  if (!merchant) {
+    return (
+      <div className="flex items-center justify-center min-h-[600px]">
+        <Card className="max-w-lg p-8 text-center">
+          <Activity className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-3">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">
+            PixelFlow requires Whop authentication to function. This will be automatically enabled once the app is approved by Whop.
+          </p>
+          <p className="text-sm text-gray-500">
+            If you&apos;re seeing this message after approval, please try refreshing the page or contact support.
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
   const currentTier = merchant.subscriptionTier.toLowerCase() as SubscriptionTier;
   const currentTierConfig = getTierConfig(currentTier);
 
