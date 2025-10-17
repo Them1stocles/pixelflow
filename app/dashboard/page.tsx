@@ -95,7 +95,7 @@ export default async function DashboardPage() {
             PixelFlow requires Whop authentication to function. This will be automatically enabled once the app is approved by Whop.
           </p>
           <p className="text-sm text-gray-500">
-            If you're seeing this message after approval, please try refreshing the page or contact support.
+            If you&apos;re seeing this message after approval, please try refreshing the page or contact support.
           </p>
         </Card>
       </div>

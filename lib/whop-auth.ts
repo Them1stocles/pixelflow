@@ -28,30 +28,19 @@ export interface WhopSession {
  */
 export async function getWhopSession(): Promise<WhopSession | null> {
   try {
-    const headersList = headers();
-
     console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
 
     // Pass headers directly to validateToken - SDK handles cookie extraction
-    const tokenData = await validateToken({
-      headers,
-      dontThrow: true,
-    });
+    // Remove dontThrow to see real authentication errors
+    const tokenData = await validateToken({ headers });
 
-    if (!tokenData) {
-      console.warn('[PixelFlow Auth] ⚠️  validateToken returned null - no token found in request headers');
-      console.warn('[PixelFlow Auth] ℹ️  This is expected before Whop app approval or when not using whop-proxy in development');
-      return null;
-    }
-
-    if (!tokenData.userId) {
-      console.warn('[PixelFlow Auth] ⚠️  Token validated but userId missing:', tokenData);
+    if (!tokenData || !tokenData.userId) {
+      console.warn('[PixelFlow Auth] ⚠️  Token validated but no userId found');
       return null;
     }
 
     console.log('[PixelFlow Auth] ✅ Token validated successfully');
     console.log('[PixelFlow Auth] User ID:', tokenData.userId);
-    console.log('[PixelFlow Auth] App ID:', tokenData.appId);
 
     return {
       userId: tokenData.userId,
@@ -59,14 +48,16 @@ export async function getWhopSession(): Promise<WhopSession | null> {
       experienceId: null,
     };
   } catch (error) {
-    console.error('[PixelFlow Auth] ❌ Error validating Whop session:', error);
+    // Expected error when not authenticated or running outside Whop iframe
+    console.log('[PixelFlow Auth] ℹ️  No valid Whop authentication found');
+    console.log('[PixelFlow Auth] ℹ️  This is expected before app approval or in local development without whop-proxy');
+
+    // Log actual error for debugging
     if (error instanceof Error) {
-      console.error('[PixelFlow Auth] Error details:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      });
+      console.log('[PixelFlow Auth] Debug - Error type:', error.name);
+      console.log('[PixelFlow Auth] Debug - Error message:', error.message);
     }
+
     return null;
   }
 }
@@ -186,7 +177,6 @@ export async function getMerchantFromRequest(request: Request) {
     // Validate token using SDK - pass headers object
     const tokenData = await validateToken({
       headers: requestHeaders as any,
-      dontThrow: true,
     });
 
     if (!tokenData || !tokenData.userId) {
@@ -216,7 +206,10 @@ export async function getMerchantFromRequest(request: Request) {
 
     return merchant;
   } catch (error) {
-    console.error('Error getting merchant from request:', error);
+    console.log('[PixelFlow Auth] No valid authentication in API request');
+    if (error instanceof Error) {
+      console.log('[PixelFlow Auth] Debug - API auth error:', error.message);
+    }
     return null;
   }
 }

@@ -1,35 +1,30 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { getWhopSession } from '@/lib/whop-auth';
 
 /**
  * Whop Experiences Route
  * This is the entry point when users access PixelFlow from their Whop dashboard
  * This route is loaded in an iframe on Whop
  *
- * We use client-side redirect to navigate to dashboard within the iframe
- * Server-side redirects can cause issues with iframe embedding
+ * We use server-side redirect to navigate to dashboard
+ * This avoids React hydration issues that occur with client-side redirects
  */
-export default function ExperiencePage({
+export default async function ExperiencePage({
   params,
 }: {
   params: { experienceId: string };
 }) {
-  const router = useRouter();
+  // Validate authentication before redirecting
+  console.log('[PixelFlow] Experience route accessed:', params.experienceId);
 
-  useEffect(() => {
-    // Client-side navigation within the iframe
-    router.replace('/dashboard');
-  }, [router]);
+  const session = await getWhopSession();
 
-  // Show loading state while redirecting
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="text-center space-y-4 p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="text-gray-600">Loading PixelFlow...</p>
-      </div>
-    </div>
-  );
+  if (session) {
+    console.log('[PixelFlow] Authenticated user, redirecting to dashboard');
+  } else {
+    console.log('[PixelFlow] No session found, redirecting to dashboard (auth check will happen there)');
+  }
+
+  // Server-side redirect - this is safe in iframes and avoids hydration issues
+  redirect('/dashboard');
 }
