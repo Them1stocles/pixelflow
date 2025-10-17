@@ -39,7 +39,7 @@ export default async function DashboardLayout({
             <p className="mt-2 text-gray-600">
               You need to be logged into Whop to access this app
             </p>
-            <p className="mt-1 text-xs text-gray-400">v1.0.2</p>
+            <p className="mt-1 text-xs text-gray-400">v1.0.3</p>
           </div>
 
           <div className="space-y-4">
