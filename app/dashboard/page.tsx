@@ -6,25 +6,77 @@ import { TrendingUp, Activity, ShoppingCart, DollarSign } from 'lucide-react';
 import { UsageDisplay } from '@/components/usage-display';
 
 async function getDashboardStats(merchantId: string) {
-  // In a real app, this would call the API
-  // For now, return mock data
-  return {
-    totalEvents: 1234,
-    pageViews: 856,
-    purchases: 23,
-    totalRevenue: 2456.78,
-    currency: 'USD',
-    platformStats: {
-      facebook: { success: 1100, failed: 10, successRate: 99.1 },
-      tiktok: { success: 1050, failed: 15, successRate: 98.6 },
-      google: { success: 1150, failed: 5, successRate: 99.6 },
+  const prisma = (await import('@/lib/prisma')).default;
+
+  // Get total event count
+  const totalEvents = await prisma.trackingEvent.count({
+    where: { merchantId },
+  });
+
+  // Get event breakdown by type
+  const eventBreakdown = await prisma.trackingEvent.groupBy({
+    by: ['eventName'],
+    where: { merchantId },
+    _count: { eventName: true },
+  });
+
+  // Get platform delivery stats
+  const events = await prisma.trackingEvent.findMany({
+    where: { merchantId },
+    select: {
+      facebookStatus: true,
+      tiktokStatus: true,
+      googleStatus: true,
     },
-    eventBreakdown: [
-      { eventName: 'PageView', count: 856 },
-      { eventName: 'ViewContent', count: 234 },
-      { eventName: 'AddToCart', count: 121 },
-      { eventName: 'Purchase', count: 23 },
-    ],
+  });
+
+  // Calculate platform success rates
+  const platformStats = {
+    facebook: {
+      success: events.filter(e => e.facebookStatus === 'success').length,
+      failed: events.filter(e => e.facebookStatus === 'failed').length,
+      successRate: 0,
+    },
+    tiktok: {
+      success: events.filter(e => e.tiktokStatus === 'success').length,
+      failed: events.filter(e => e.tiktokStatus === 'failed').length,
+      successRate: 0,
+    },
+    google: {
+      success: events.filter(e => e.googleStatus === 'success').length,
+      failed: events.filter(e => e.googleStatus === 'failed').length,
+      successRate: 0,
+    },
+  };
+
+  // Calculate success rates
+  Object.keys(platformStats).forEach(platform => {
+    const stat = platformStats[platform as keyof typeof platformStats];
+    const total = stat.success + stat.failed;
+    stat.successRate = total > 0 ? (stat.success / total) * 100 : 0;
+  });
+
+  // Get revenue from purchase events
+  const purchaseEvents = await prisma.trackingEvent.aggregate({
+    where: {
+      merchantId,
+      eventName: 'Purchase',
+    },
+    _sum: { value: true },
+    _count: { id: true },
+  });
+
+  return {
+    totalEvents,
+    pageViews: eventBreakdown.find(e => e.eventName === 'PageView')?._count.eventName || 0,
+    purchases: purchaseEvents._count.id || 0,
+    totalRevenue: purchaseEvents._sum.value || 0,
+    currency: 'USD',
+    platformStats,
+    eventBreakdown: eventBreakdown.map(e => ({
+      eventName: e.eventName,
+      count: e._count.eventName,
+    })),
   };
 }
 

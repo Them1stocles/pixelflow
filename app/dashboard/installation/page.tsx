@@ -11,12 +11,14 @@ export default function InstallationPage() {
   // In real app, get merchant ID from session
   const merchantId = 'your-merchant-id';
 
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://pixelflow-teal.vercel.app';
+
   const installScript = `<!-- PixelFlow Tracking Script -->
 <script>
   window.PIXELFLOW_MERCHANT_ID = '${merchantId}';
-  window.PIXELFLOW_API_URL = 'https://pixelflow.app/api/track';
+  window.PIXELFLOW_API_URL = '${baseUrl}/api/track';
 </script>
-<script src="https://pixelflow.app/pixel-script.js" async></script>
+<script src="${baseUrl}/pixel-script.js" async></script>
 <!-- End PixelFlow Script -->`;
 
   const handleCopy = () => {

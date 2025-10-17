@@ -1,9 +1,9 @@
 {
   "name": "pixelflow",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
-    "dev": "whop-proxy",
+    "dev": "whop-proxy --command 'next dev'",
     "dev:local": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",

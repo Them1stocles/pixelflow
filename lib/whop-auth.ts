@@ -84,10 +84,15 @@ export async function getWhopMerchant(session?: WhopSession | null) {
   });
 
   if (!merchant) {
-    // Create new merchant for first-time Whop user
-    // We'll get their email from Whop API or set a placeholder
-    merchant = await prisma.merchant.create({
-      data: {
+    // Create or update merchant for Whop user
+    // Use upsert to handle cases where merchant might exist but query failed
+    merchant = await prisma.merchant.upsert({
+      where: { whopUserId: whopSession.userId },
+      update: {
+        // Update company ID if it changed
+        whopCompanyId: whopSession.companyId,
+      },
+      create: {
         whopUserId: whopSession.userId,
         whopCompanyId: whopSession.companyId,
         email: `${whopSession.userId}@whop.user`, // Placeholder until we get real email
@@ -98,7 +103,7 @@ export async function getWhopMerchant(session?: WhopSession | null) {
       },
     });
 
-    console.log(`Created new merchant for Whop user ${whopSession.userId}`);
+    console.log(`Created/updated merchant for Whop user ${whopSession.userId}`);
   }
 
   return merchant;
@@ -173,8 +178,11 @@ export async function getMerchantFromRequest(request: Request) {
     });
 
     if (!merchant) {
-      merchant = await prisma.merchant.create({
-        data: {
+      // Use upsert to avoid duplicate key errors
+      merchant = await prisma.merchant.upsert({
+        where: { whopUserId: tokenData.userId },
+        update: {},
+        create: {
           whopUserId: tokenData.userId,
           whopCompanyId: null,
           email: `${tokenData.userId}@whop.user`,
