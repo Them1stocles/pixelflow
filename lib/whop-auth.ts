@@ -42,6 +42,9 @@ export async function getWhopSession(): Promise<WhopSession | null> {
     const whopToken = headersList.get('cookie')?.includes('whop_user_token');
     console.log('[PixelFlow Auth] Has whop_user_token cookie:', whopToken);
 
+    // Log configured App ID
+    console.log('[PixelFlow Auth] Configured NEXT_PUBLIC_WHOP_APP_ID:', process.env.NEXT_PUBLIC_WHOP_APP_ID);
+
     // Pass headers directly to validateToken - SDK handles cookie extraction
     // Remove dontThrow to see real authentication errors
     const tokenData = await validateToken({ headers });
