@@ -81,11 +81,12 @@ async function getDashboardStats(merchantId: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await getWhopSession();
-  const merchant = session ? await getWhopMerchant(session) : null;
+  try {
+    const session = await getWhopSession();
+    const merchant = session ? await getWhopMerchant(session) : null;
 
-  // If no merchant, show auth pending message (don't redirect externally!)
-  if (!merchant) {
+    // If no merchant, show auth pending message (don't redirect externally!)
+    if (!merchant) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
         <Card className="max-w-lg p-8 text-center">
@@ -263,4 +264,26 @@ export default async function DashboardPage() {
       </Card>
     </div>
   );
+  } catch (error) {
+    console.error('[Dashboard] Error loading dashboard:', error);
+    return (
+      <div className="flex items-center justify-center min-h-[600px]">
+        <Card className="max-w-lg p-8 text-center">
+          <Activity className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-3">Error Loading Dashboard</h2>
+          <p className="text-gray-600 mb-4">
+            There was an error loading your dashboard. This might be a temporary issue.
+          </p>
+          <p className="text-sm text-gray-500">
+            Please try refreshing the page. If the problem persists, contact support.
+          </p>
+          {error instanceof Error && (
+            <p className="text-xs text-gray-400 mt-4 font-mono">
+              Error: {error.message}
+            </p>
+          )}
+        </Card>
+      </div>
+    );
+  }
 }
