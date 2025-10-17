@@ -1,22 +1,35 @@
-export const dynamic = 'force-dynamic';
+'use client';
 
-import { requireWhopAuth } from '@/lib/whop-auth';
-import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * Whop Experiences Route
- * This is the customer-facing view when users purchase access to PixelFlow
- * For our app, customers ARE merchants, so we redirect to dashboard
+ * This is the entry point when users access PixelFlow from their Whop dashboard
+ * This route is loaded in an iframe on Whop
+ *
+ * We use client-side redirect to navigate to dashboard within the iframe
+ * Server-side redirects can cause issues with iframe embedding
  */
-export default async function ExperiencePage({
+export default function ExperiencePage({
   params,
 }: {
   params: { experienceId: string };
 }) {
-  // Authenticate with Whop
-  const merchant = await requireWhopAuth();
+  const router = useRouter();
 
-  // For PixelFlow, the experience IS the dashboard
-  // Redirect to dashboard with the merchant authenticated
-  redirect('/dashboard');
+  useEffect(() => {
+    // Client-side navigation within the iframe
+    router.replace('/dashboard');
+  }, [router]);
+
+  // Show loading state while redirecting
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="text-center space-y-4 p-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="text-gray-600">Loading PixelFlow...</p>
+      </div>
+    </div>
+  );
 }
