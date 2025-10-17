@@ -33,73 +33,35 @@ export default async function DashboardLayout({
   if (showLoginPrompt) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="max-w-2xl w-full space-y-8 p-8 bg-white rounded-lg shadow">
+        <div className="max-w-md w-full space-y-6 p-8 bg-white rounded-lg shadow">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
               <Activity className="w-8 h-8 text-blue-600" />
             </div>
 
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">PixelFlow</h2>
-              <p className="text-sm text-gray-500 mt-1">Pixel Tracking & Conversion API</p>
-              <p className="text-xs text-gray-400 mt-1">v1.0.5</p>
+              <h2 className="text-3xl font-bold text-gray-900">Welcome to PixelFlow</h2>
+              <p className="text-sm text-gray-500 mt-2">Pixel Tracking & Conversion API for Whop Merchants</p>
+              <p className="text-xs text-gray-400 mt-1">v1.0.6</p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
-              <h3 className="font-semibold text-lg text-blue-900 mb-3">
-                App Pending Whop Approval
-              </h3>
-              <p className="text-gray-700 mb-4">
-                PixelFlow is currently under review by the Whop team. Authentication will be automatically enabled once the app is approved and published to the Whop App Store.
-              </p>
-              <div className="text-sm text-gray-600 space-y-2">
-                <p><strong>For Whop Reviewers:</strong></p>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>This app uses Whop SDK authentication (<code className="bg-blue-100 px-1 rounded">@whop-apps/sdk</code>)</li>
-                  <li>Cloudflare proxy injection is required for production authentication</li>
-                  <li>Authentication will work automatically after app approval</li>
-                  <li>Local testing uses <code className="bg-blue-100 px-1 rounded">@whop-apps/dev-proxy</code></li>
-                </ul>
-              </div>
-            </div>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 text-center">
+              Click the button below to access your PixelFlow dashboard and start tracking conversions.
+            </p>
 
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-3">Features & Capabilities</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">Automatic Facebook Pixel & CAPI tracking</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">TikTok Events API integration</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">Google Analytics 4 tracking</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">Real-time event monitoring</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">Server-side conversion tracking</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
-                  <span className="text-gray-700">Multi-tier subscription plans (Free/Basic/Pro/Enterprise)</span>
-                </div>
-              </div>
-            </div>
+            <Button asChild className="w-full">
+              <Link href="/dashboard">
+                Open Dashboard
+              </Link>
+            </Button>
+          </div>
 
-            <div className="border-t pt-4">
-              <p className="text-xs text-gray-500 text-center">
-                PixelFlow automatically tracks all Whop purchases, subscriptions, and group joins via webhooks. No manual setup required for merchants.
-              </p>
-            </div>
+          <div className="border-t pt-4">
+            <p className="text-xs text-gray-500 text-center">
+              PixelFlow automatically tracks all Whop purchases, subscriptions, and group joins. Configure your Facebook, TikTok, and Google Analytics pixels to get started.
+            </p>
           </div>
         </div>
       </div>
