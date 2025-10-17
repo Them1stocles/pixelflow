@@ -30,15 +30,28 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     const headersList = headers();
 
+    console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
+
     // Pass headers directly to validateToken - SDK handles cookie extraction
     const tokenData = await validateToken({
       headers,
       dontThrow: true,
     });
 
-    if (!tokenData || !tokenData.userId) {
+    if (!tokenData) {
+      console.warn('[PixelFlow Auth] ⚠️  validateToken returned null - no token found in request headers');
+      console.warn('[PixelFlow Auth] ℹ️  This is expected before Whop app approval or when not using whop-proxy in development');
       return null;
     }
+
+    if (!tokenData.userId) {
+      console.warn('[PixelFlow Auth] ⚠️  Token validated but userId missing:', tokenData);
+      return null;
+    }
+
+    console.log('[PixelFlow Auth] ✅ Token validated successfully');
+    console.log('[PixelFlow Auth] User ID:', tokenData.userId);
+    console.log('[PixelFlow Auth] App ID:', tokenData.appId);
 
     return {
       userId: tokenData.userId,
@@ -46,7 +59,14 @@ export async function getWhopSession(): Promise<WhopSession | null> {
       experienceId: null,
     };
   } catch (error) {
-    console.error('[PixelFlow Auth] Error validating Whop session:', error);
+    console.error('[PixelFlow Auth] ❌ Error validating Whop session:', error);
+    if (error instanceof Error) {
+      console.error('[PixelFlow Auth] Error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      });
+    }
     return null;
   }
 }
@@ -60,8 +80,11 @@ export async function getWhopMerchant(session?: WhopSession | null) {
   const whopSession = session || (await getWhopSession());
 
   if (!whopSession) {
+    console.log('[PixelFlow Auth] No Whop session available, cannot get merchant');
     return null;
   }
+
+  console.log('[PixelFlow Auth] 🔍 Looking up merchant for user:', whopSession.userId);
 
   // Find or create merchant based on Whop user ID
   let merchant = await prisma.merchant.findUnique({
@@ -69,6 +92,8 @@ export async function getWhopMerchant(session?: WhopSession | null) {
   });
 
   if (!merchant) {
+    console.log('[PixelFlow Auth] 🆕 Merchant not found, creating new merchant record');
+
     // Create or update merchant for Whop user
     // Use upsert to handle cases where merchant might exist but query failed
     merchant = await prisma.merchant.upsert({
@@ -88,7 +113,18 @@ export async function getWhopMerchant(session?: WhopSession | null) {
       },
     });
 
-    console.log(`Created/updated merchant for Whop user ${whopSession.userId}`);
+    console.log('[PixelFlow Auth] ✅ Created/updated merchant:', {
+      id: merchant.id,
+      whopUserId: merchant.whopUserId,
+      tier: merchant.subscriptionTier,
+      eventLimit: merchant.monthlyEventLimit,
+    });
+  } else {
+    console.log('[PixelFlow Auth] ✅ Found existing merchant:', {
+      id: merchant.id,
+      tier: merchant.subscriptionTier,
+      events: `${merchant.monthlyEventCount}/${merchant.monthlyEventLimit}`,
+    });
   }
 
   return merchant;
