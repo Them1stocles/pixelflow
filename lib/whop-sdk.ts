@@ -1,21 +1,45 @@
-import { WhopServerSdk } from "@whop/api";
+import { validateToken, hasAccess } from '@whop-apps/sdk';
 
 /**
- * Whop Server SDK Instance
- *
- * This uses the modern @whop/api SDK (not the old @whop-apps/sdk)
- * Following the official whop-nextjs-app-template pattern
+ * Whop SDK Utilities
+ * Uses @whop-apps/sdk with correct async/await pattern
  */
-export const whopSdk = WhopServerSdk({
-  // App ID - used for token validation
-  appId: process.env.NEXT_PUBLIC_WHOP_APP_ID ?? "fallback",
 
-  // API Key - used for server-to-server API calls
-  appApiKey: process.env.WHOP_API_KEY ?? "fallback",
+export interface TokenData {
+  userId: string;
+  appId?: string;
+}
 
-  // Optional: Agent user for making requests on behalf of
-  onBehalfOfUserId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID,
+/**
+ * Verify user token from headers
+ * This wraps validateToken with proper async handling
+ */
+export async function verifyUserToken(headers: any): Promise<TokenData> {
+  // await the headers() function call if it's a function
+  const headersList = typeof headers === 'function' ? await headers() : headers;
 
-  // Optional: Default company context
-  companyId: process.env.NEXT_PUBLIC_WHOP_COMPANY_ID,
-});
+  // Call validateToken with the headers object
+  const tokenData = await validateToken({ headers: headersList });
+
+  return {
+    userId: tokenData.userId,
+    appId: tokenData.appId,
+  };
+}
+
+/**
+ * Check if user has access to experience
+ */
+export async function checkUserAccess(experienceId: string, headers: any): Promise<boolean> {
+  const headersList = typeof headers === 'function' ? await headers() : headers;
+
+  const access = await hasAccess({
+    to: experienceId,
+    headers: headersList,
+  });
+
+  return access;
+}
+
+// Export SDK functions for direct use
+export { validateToken, hasAccess };

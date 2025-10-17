@@ -1,12 +1,11 @@
-import { whopSdk } from './whop-sdk';
+import { verifyUserToken, checkUserAccess } from './whop-sdk';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import prisma from './prisma';
 
 /**
  * Whop Authentication Utilities
- * Uses modern @whop/api SDK for production-ready OAuth authentication
- * Following official whop-nextjs-app-template pattern
+ * Uses @whop-apps/sdk with correct async pattern
  */
 
 export interface WhopUser {
@@ -31,12 +30,8 @@ export async function getWhopSession(): Promise<WhopSession | null> {
   try {
     console.log('[PixelFlow Auth] 🔍 Validating Whop token...');
 
-    // Get headers list
-    const headersList = await headers();
-
-    // ✅ Use the new @whop/api SDK pattern
-    // Pass headersList object directly (not wrapped in { headers })
-    const { userId } = await whopSdk.verifyUserToken(headersList);
+    // ✅ Pass headers function directly - wrapper handles awaiting
+    const { userId } = await verifyUserToken(headers);
 
     if (!userId) {
       console.warn('[PixelFlow Auth] ⚠️  Token validated but no userId found');
@@ -152,20 +147,7 @@ export async function requireWhopAuth() {
  */
 export async function checkWhopAccess(experienceId: string): Promise<boolean> {
   try {
-    const headersList = await headers();
-    const { userId } = await whopSdk.verifyUserToken(headersList);
-
-    if (!userId) {
-      return false;
-    }
-
-    // ✅ Use the SDK's built-in access check
-    const result = await whopSdk.access.checkIfUserHasAccessToExperience({
-      userId,
-      experienceId,
-    });
-
-    return result.hasAccess;
+    return await checkUserAccess(experienceId, headers);
   } catch (error) {
     console.error('Error checking Whop access:', error);
     return false;
@@ -178,16 +160,8 @@ export async function checkWhopAccess(experienceId: string): Promise<boolean> {
  */
 export async function getMerchantFromRequest(request: Request) {
   try {
-    // ✅ Create headers-like object from Request
-    const requestHeaders = {
-      get: (key: string) => request.headers.get(key),
-      forEach: (callback: (value: string, key: string) => void) => {
-        request.headers.forEach(callback);
-      },
-    };
-
-    // ✅ Verify token with new SDK
-    const { userId } = await whopSdk.verifyUserToken(requestHeaders as any);
+    // ✅ Pass request.headers directly
+    const { userId } = await verifyUserToken(request.headers);
 
     if (!userId) {
       return null;
