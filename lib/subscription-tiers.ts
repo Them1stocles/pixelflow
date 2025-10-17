@@ -139,15 +139,13 @@ export function getNextTier(currentTier: SubscriptionTier): SubscriptionTier | n
 
 /**
  * Get Whop checkout URL for a specific tier
- * Note: Replace with actual Whop product IDs once configured
  */
 export function getUpgradeUrl(tier: SubscriptionTier): string {
-  // TODO: Replace with actual Whop product IDs from dashboard
   const productIds: Record<SubscriptionTier, string> = {
     free: '', // No upgrade URL for free
-    basic: 'WHOP_BASIC_PRODUCT_ID',
-    pro: 'WHOP_PRO_PRODUCT_ID',
-    enterprise: 'WHOP_ENTERPRISE_PRODUCT_ID',
+    basic: 'prod_66Easm7HIbDH2',
+    pro: 'prod_tGpWLv7Oo4UZw',
+    enterprise: 'prod_tLvGU9oRsV8Ex',
   };
 
   const productId = productIds[tier];

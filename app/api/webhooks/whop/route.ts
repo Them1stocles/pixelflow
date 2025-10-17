@@ -137,11 +137,10 @@ export async function POST(req: NextRequest) {
         console.log(`Merchant ${merchant.id} PixelFlow subscription went valid`);
 
         // Map Whop product IDs to subscription tiers
-        // These product IDs should match the ones configured in Whop dashboard
         const productTierMap: Record<string, SubscriptionTier> = {
-          'WHOP_BASIC_PRODUCT_ID': 'basic',
-          'WHOP_PRO_PRODUCT_ID': 'pro',
-          'WHOP_ENTERPRISE_PRODUCT_ID': 'enterprise',
+          'prod_66Easm7HIbDH2': 'basic',
+          'prod_tGpWLv7Oo4UZw': 'pro',
+          'prod_tLvGU9oRsV8Ex': 'enterprise',
         };
 
         const productId = data.product_id;
