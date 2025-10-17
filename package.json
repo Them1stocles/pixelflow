@@ -1,9 +1,10 @@
 {
   "name": "pixelflow",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "whop-proxy",
+    "dev:local": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
@@ -47,6 +48,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@whop-apps/dev-proxy": "^0.0.1-canary.117",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
