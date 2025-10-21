@@ -110,29 +110,21 @@ export default async function DashboardPage() {
       name: 'Total Events',
       value: stats.totalEvents.toLocaleString(),
       icon: Activity,
-      change: '+12%',
-      changeType: 'positive' as const,
     },
     {
       name: 'Page Views',
       value: stats.pageViews.toLocaleString(),
       icon: TrendingUp,
-      change: '+8%',
-      changeType: 'positive' as const,
     },
     {
       name: 'Purchases',
       value: stats.purchases.toLocaleString(),
       icon: ShoppingCart,
-      change: '+23%',
-      changeType: 'positive' as const,
     },
     {
       name: 'Revenue',
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      change: '+18%',
-      changeType: 'positive' as const,
     },
   ];
 
@@ -163,7 +155,6 @@ export default async function DashboardPage() {
                 <div>
                   <p className="text-sm text-gray-600">{stat.name}</p>
                   <p className="text-3xl font-bold mt-2">{stat.value}</p>
-                  <p className="text-sm text-green-600 mt-1">{stat.change} from last month</p>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <Icon className="w-6 h-6 text-blue-600" />
